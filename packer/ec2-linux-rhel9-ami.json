@@ -36,7 +36,7 @@
         ],
         "filters": {
           "virtualization-type": "hvm",
-          "name": "RHEL-8.*_HVM-20*",
+          "name": "CentOS Linux 7*",
           "architecture": "x86_64",
           "root-device-type": "ebs"
         },
