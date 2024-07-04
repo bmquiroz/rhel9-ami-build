@@ -1,0 +1,193 @@
+---
+# defaults file for roles/nginx-proxy
+
+######################################################################
+# Top-level Nginx config /etc/nginx/nginx.conf
+######################################################################
+
+# Number of worker processes, use auto to set this to the number of CPUs
+nginx_proxy_worker_processes: 1
+
+# Maximum number of simultaneous connections that can be opened by a worker
+# process
+nginx_proxy_worker_connections: 1024
+
+# Format for access.log, see templates/nginx-conf.j2 for predefined formats
+nginx_proxy_log_format: main_timed_cache
+
+# Custom log format
+nginx_proxy_log_format_custom: ''
+
+# Array of dictionaries with per-site parameters (same as main site)
+nginx_proxy_sites:
+  - nginx_proxy_is_default: true
+
+# URI for 404 errors
+nginx_proxy_404:
+
+# Additional directives to be added to http context
+nginx_proxy_conf_http: []
+
+
+######################################################################
+# Defaults for per-site Nginx config /etc/nginx/*.d/[site].conf
+######################################################################
+
+# Servername (required for virtualhosts)
+nginx_proxy_server_name: "$hostname"
+
+# Enable SSL?
+nginx_proxy_ssl: false
+
+# Enable HTTP2 (ignore is nginx_proxy_ssl False)?
+nginx_proxy_http2: false
+
+# Redirect all http requests to https?
+nginx_proxy_force_ssl: false
+
+# Optional vars:
+
+# Server path to SSL certificate
+nginx_proxy_ssl_certificate: ""
+
+# Server path to SSL certificate key
+nginx_proxy_ssl_certificate_key: ""
+
+# Local path to the SSL certificate
+nginx_proxy_ssl_certificate_source_path: ""
+
+# Local path to the SSL certificate key
+nginx_proxy_ssl_certificate_key_source_path: ""
+
+# If defined the age to return in the Strict-Transport-Security header
+nginx_proxy_hsts_age:
+
+# DNS servers for hostname lookups
+# TODO: This should be renamed `nginx_proxy_dynamic_resolvers`, and
+# support added for per-site configuration
+nginx_dynamic_proxy_resolvers:
+
+# Number and size of proxy buffers
+nginx_proxy_buffers:
+
+# List of dicts of backend servers
+# To force dynamic DNS lookups need to use a variable:
+# https://www.jethrocarr.com/2013/11/02/nginx-reverse-proxies-and-dns-resolution/
+# http://forum.nginx.org/read.php?2,215830,215832#msg-215832
+nginx_proxy_backends: []
+# - name: test # Required if dynamic: True
+#   location: /prefix
+#   server: http://example.org
+#   dynamic: False
+#   cache_validity: 1d
+#   websockets: False
+
+# List of locations to be passed to nginx_proxy_redirect_map, and http status
+nginx_proxy_redirect_map_locations: []
+# - location: /old
+#   code: 302
+
+# List of locations to be handled without using the map (no query $args)
+nginx_proxy_direct_locations: []
+# - location: /old
+#   redirect301: /new/url
+#   redirect302: /new/url
+#   index: index.html
+#   root: /srv/www/root
+#   alias: /srv/alias
+#   custom:
+#   - default_type text/html
+
+# Locations which should be blocked
+nginx_proxy_block_locations: []
+
+# Set this to True if any proxies require websockets
+nginx_proxy_websockets_enable: false
+
+# Listen on this port, set to 0 to disable
+nginx_proxy_listen_http: 80
+
+# Pass this hostname to the backend proxy, default is automatic
+nginx_proxy_set_header_host: "$host"
+
+# Set a trusted header containing the scheme to be passed to the backend
+nginx_proxy_forward_scheme_header:
+
+# Set to True to add X-Proxy-Cache* headers for debugging
+nginx_proxy_debug_cache_headers: false
+
+# Set this to True to ensure nginx_proxy_cachebuster_port takes effect, can
+# be per site
+nginx_proxy_cachebuster_enabled: true
+
+# List of additional directives to be added to the proxy server context, can
+# be per site
+nginx_proxy_additional_directives: []
+
+
+######################################################################
+# Global caching parameters
+######################################################################
+
+# Requests on this port will force a cache refresh, global configuration
+# You must also set nginx_proxy_cachebuster_enabled: True
+nginx_proxy_cachebuster_port:
+
+
+# Parent path of Nginx disk caches
+nginx_proxy_cache_parent_path: /var/cache/nginx
+# List of caches
+nginx_proxy_caches: []
+
+# Don't cache these URI patterns (list)
+nginx_proxy_cache_skip_uri: [default]
+# Cache these URI patterns (list)
+nginx_proxy_cache_match_uri: []
+# Don't cache these arg patterns (list)
+nginx_proxy_cache_skip_arg: []
+# Cache these arg patterns (list)
+nginx_proxy_cache_match_arg: []
+
+# Prevent multiple backend requests to the same object within this time
+nginx_proxy_cache_lock_time: 1m
+
+# Headers to be ignored in cache, e.g. '"Set-Cookie" "Vary" "Expires"'
+nginx_proxy_cache_ignore_headers:
+
+# Headers to be hidden from clients in cached responses, list
+nginx_proxy_cache_hide_headers: []
+
+# Override the default Nginx cache key
+nginx_proxy_cache_key:
+
+# Manipulate the cache key
+nginx_proxy_cache_key_map: []
+
+# Use stale cache if these situations are encountered
+nginx_proxy_cache_use_stale: >-
+  error timeout invalid_header updating http_500 http_502 http_503 http_504
+
+
+######################################################################
+# Other global defaults
+######################################################################
+
+# List of dicts of upstream servers
+nginx_proxy_upstream_servers: []
+
+# List of redirections
+nginx_proxy_redirect_map: []
+# - match: /old/url
+#   dest: /new/url
+
+# List of dicts of backend streaming servers
+nginx_proxy_streams: []
+
+# List of custom Nginx maps for use in other custom configuration
+# http://nginx.org/en/docs/http/ngx_http_map_module.html
+nginx_proxy_additional_maps: []
+# - from: sourcevariable
+#   to: destvariable
+#   mapvalues:
+#     - default value0
+#     - key1 value1

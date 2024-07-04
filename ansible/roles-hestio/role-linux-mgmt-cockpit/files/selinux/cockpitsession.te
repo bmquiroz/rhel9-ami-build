@@ -1,0 +1,10 @@
+
+module cockpitsession 1.0;
+
+require {
+	type cockpit_session_t;
+	class process setrlimit;
+}
+
+#============= cockpit_session_t ==============
+allow cockpit_session_t self:process setrlimit;

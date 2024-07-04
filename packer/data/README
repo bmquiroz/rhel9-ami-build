@@ -1,0 +1,6 @@
+ssg-rhel9-ds-tailoring_vra.xml has rootlogin control disabled. 
+This is because VRA is configured to login to the system as root 
+on initial build, and disabling this breaks VRA. Ideally it should
+be using a service account with keys and sudo but it is what it is
+for anywhere else where this is not required the root login should 
+be disabled.

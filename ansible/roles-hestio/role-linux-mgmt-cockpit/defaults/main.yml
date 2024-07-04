@@ -1,0 +1,30 @@
+---
+
+# Package Name            Description
+#
+# cockpit-bridge            Cockpit bridge server-side component
+# cockpit-dashboard         Cockpit SSH remoting and dashboard
+# cockpit-doc               Cockpit deployment and developer guide
+# cockpit-docker            Cockpit user interface for Docker containers
+# cockpit-kdump             Cockpit user interface for kernel crash dumping
+# cockpit-kubernetes        Cockpit user interface for Kubernetes cluster
+# cockpit-machines          Cockpit user interface for virtual machines
+# cockpit-networkmanager    Cockpit user interface for networking, using NetworkManager
+# cockpit-pcp               Cockpit PCP integration
+# cockpit-selinux           Cockpit SELinux package
+# cockpit-shell             Cockpit Shell user interface package
+# cockpit-sosreport         Cockpit user interface for diagnostic reports
+# cockpit-storaged          Cockpit user interface for storage, using Storaged
+# cockpit-subscriptions     Cockpit subscription user interface package
+# cockpit-system            Cockpit admin interface package for configuring and troubleshooting a system
+# cockpit-tests             Tests for Cockpit
+# cockpit-ws                Cockpit Web Service
+
+# The default ones to install
+cockpit_modules:
+ - cockpit-dashboard
+ - cockpit-machines
+ - cockpit-selinux
+ - cockpit-shell
+ - cockpit-storaged
+

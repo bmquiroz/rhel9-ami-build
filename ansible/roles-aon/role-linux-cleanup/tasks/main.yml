@@ -1,0 +1,31 @@
+---
+
+- name: "cleanup | Find Puppet repo"
+  find:
+    paths: "/etc/yum.repos.d/"
+    patterns: "puppet*.repo"
+  register: find_results
+
+- name: "cleanup | Remove Puppet repo"
+  file:
+    name: "{{ item['path'] }}"
+    state: absent
+  with_items: "{{ find_results['files'] }}"
+
+- name: "cleanup | Capture RHUI package"
+  shell: "rpm -qa | grep -i rhui"
+  register: rhui_packages
+  ignore_errors: true
+
+- name: "cleanup | debug"
+  debug:
+    msg:
+      - "RHUI: {{ rhui_packages.stdout }}"
+  ignore_errors: true
+
+- name: "cleanup | Remove RHUI package"
+  command:
+    cmd: "rpm --erase {{ item }}"
+  with_items: "{{ rhui_packages.stdout }}"
+  ignore_errors: true
+

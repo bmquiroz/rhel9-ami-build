@@ -1,0 +1,37 @@
+---
+
+- name: install | Ensure base package for cockpit is installed
+  when: ansible_os_family == 'RedHat'
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - cockpit
+    - cockpit-ws
+    - cockpit-bridge
+    - cockpit-system
+    - cockpit-storaged
+    - cockpit-sosreport
+    - cockpit-docker
+  notify: restart_cockpit
+  tags:
+    - mgmt_cockpit
+
+
+- name: install | Ensure packages for cockpit and plugins are installed
+  when: ansible_os_family == 'RedHat'
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ cockpit_modules|default([]) }}"
+  notify: restart_cockpit
+  tags:
+    - mgmt_cockpit
+
+
+- name: install | Check for selinux policy needed
+  when: ansible_selinux.status is defined
+  include: selinux-policy.yml
+  tags:
+    - mgmt_cockpit
+

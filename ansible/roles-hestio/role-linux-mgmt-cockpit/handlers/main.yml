@@ -1,0 +1,16 @@
+---
+
+- name: restart_cockpit_service
+  service:
+    name: cockpit
+    state: restarted
+  listen: "restart_cockpit"
+
+- name: restart_cockpit_socket
+  service:
+    name: cockpit.socket
+    state: restarted
+    enabled: true
+  listen: "restart_cockpit"
+
+

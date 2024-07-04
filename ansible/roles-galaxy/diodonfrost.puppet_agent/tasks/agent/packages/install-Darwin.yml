@@ -1,0 +1,43 @@
+---
+# Install puppet-agent on osx
+
+- name: Darwin | Check if puppet is installed
+  stat:
+    path: /opt/puppetlabs/bin/puppet
+  register: puppet_package
+
+- name: Darwin | Install and manage puppet-agent
+  block:
+
+    - name: Darwin | Temporary directory
+      file:
+        path: ./tmp
+        state: directory
+
+    - name: Darwin | Download puppet-agent package
+      get_url:
+        url: "https://downloads.puppetlabs.com/mac/puppet{{ puppet_version }}/{{ ansible_distribution_major_version }}.{{ ansible_distribution_version.split('.')[-2] }}/x86_64/{{ puppet_agent_package_official }}.dmg"
+        dest: ./tmp/{{ puppet_agent_package_official }}.dmg
+
+    # Don't know why it goes into error but it still works
+    - name: Darwin | Mount dmg
+      command: "hdiutil attach ./tmp/{{ puppet_agent_package_official }}.dmg -nobrowse -mountpoint ./tmp/{{ puppet_agent_package_official }}"
+      ignore_errors: yes
+
+    - name: Darwin | Install puppet-agent
+      shell: "installer -pkg ./tmp/{{ puppet_agent_package_official }}/puppet-agent-*.pkg -target /"
+
+    - name: Darwin | Unmount and remove temporary directory
+      shell: "hdiutil detach ./tmp/{{ puppet_agent_package_official }}/ && rm -R ./tmp/"
+
+  when: not puppet_package.stat.exists
+
+- name: Darwin | Check if puppet service is running
+  shell: launchctl list | grep puppet
+  register: puppet_service
+  changed_when: false
+  ignore_errors: yes
+
+- name: Darwin | Puppet-agent service on osx
+  command: launchctl load -w /Library/LaunchDaemons/com.puppetlabs.puppet.plist
+  when: puppet_service.rc != 0

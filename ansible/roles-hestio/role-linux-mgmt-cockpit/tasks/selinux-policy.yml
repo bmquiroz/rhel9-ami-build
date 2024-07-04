@@ -1,0 +1,38 @@
+---
+
+- name: selinux-policy | Ensure packages for selinux policy are present
+  when: ansible_os_family == 'RedHat'
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - "selinux-policy-minimum"
+  notify: restart_cockpit
+  tags:
+    - mgmt_cockpit
+
+
+- name: selinux-policy | Copy policy files
+  copy:
+    src: "selinux"
+    dest: "/tmp/"
+  tags:
+    - mgmt_cockpit
+
+
+- name: selinux-policy | list of current selinux modules
+  shell: |
+    semodule -l | awk '{print $1}'
+  register: selinux_modules
+  tags:
+    - mgmt_cockpit
+
+
+- name: selinux-policy | Install the selinux module
+  command: "semodule -X 100 -i cockpitsession.pp"
+  args:
+    chdir: "/tmp/selinux/"
+  when: "'cockpitsession' not in selinux_modules.stdout_lines"
+  notify: restart_cockpit
+  tags:
+    - mgmt_cockpit

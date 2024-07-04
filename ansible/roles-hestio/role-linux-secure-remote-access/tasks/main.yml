@@ -1,0 +1,5 @@
+---
+
+- name: "main | Secure remote access"
+  debug:
+    msg: "Placeholder for securing remote access"

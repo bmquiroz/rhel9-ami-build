@@ -1,0 +1,12 @@
+---
+
+- name: service | Ensure the cockpit services are enabled
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+  with_items:
+    - "cockpit"
+    - "cockpit.socket"
+  tags:
+    - logging_forwarder

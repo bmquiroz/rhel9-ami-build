@@ -1,0 +1,11 @@
+---
+
+
+- hosts: all
+  serial: 2
+  become: true
+  roles:
+    - role: diodonfrost.puppet_agent
+    - role: role-linux-secure-remote-access
+    - role: role-linux-initial-bootstrap
+    - role: role-linux-cleanup

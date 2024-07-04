@@ -1,0 +1,126 @@
+{
+  "variables": {
+    "ami_prefix": null,
+    "ami_version_major": "1",
+    "ami_release": null,
+    "packer_config_root": null,
+    "ansible_root": null
+  },
+  "builders": [
+    {
+      "name": "us-east-1-RHEL9",
+      "type": "amazon-ebs",
+      "region": "us-east-1",
+      "ami_regions": [ "us-east-1" ],
+      "ami_users": [ 
+        "795345444371"
+      ],
+      "instance_type": "t2.large",
+      "ssh_username": "ec2-user",
+      "ssh_timeout": "10m",
+      "ssh_file_transfer_method": "sftp",
+      "vpc_id": "vpc-03d790a49d55d25c2",
+      "subnet_id": "subnet-047543b5ae3b70ee4",
+      "run_tags": {
+        "OS": "RedHat Linux",
+        "Created By": "Packer",
+        "PackerUUID": "deff2f7a-562d-457d-9b67-74154057aaeb",
+        "Name": "RHEL9-{{user `ami_prefix`}}-v{{user `ami_version_major`}}_{{user `ami_release`}}_{{timestamp}}"
+      },
+      "ena_support": true,
+      "ami_name": "RHEL9-{{user `ami_prefix`}}-v{{user `ami_version_major`}}_{{user `ami_release`}}_{{timestamp}}",
+      "ami_description": "RedHat Virtual Machine - Linux - Release v{{user `ami_version_major`}}_{{user `ami_release`}}",
+      "source_ami_filter": {
+        "owners": [
+          "amazon"
+        ],
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "RHEL-9.*_HVM-20*",
+          "architecture": "x86_64",
+          "root-device-type": "ebs"
+        },
+        "most_recent": true
+      },
+      "launch_block_device_mappings": [
+        {
+          "device_name": "/dev/sda1",
+          "volume_size": 50,
+          "volume_type": "gp2",
+          "delete_on_termination": true
+        },
+        {
+          "device_name": "/dev/sdg",
+          "volume_size": 100,
+          "volume_type": "gp2",
+          "delete_on_termination": true
+        }
+      ],
+      "tags": {
+        "OS": "RedHat Linux 9",
+        "Created By": "GitLab Image Factory",
+        "PackerUUID": "deff2f7a-562d-457d-9b67-74154057aaeb",
+        "ImageFactoryID": "AWS-VM-RHEL9-{{user `ami_version_major`}}",
+        "Name": "RHEL9-{{user `ami_prefix`}}-v{{user `ami_version_major`}}_{{user `ami_release`}}_{{timestamp}}",
+        "Release": "{{user `ami_release`}}"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "expect_disconnect": "true",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "script": "{{user `packer_config_root`}}/scripts/disk_format.sh",
+      "pause_before": "60s"
+    },
+    {
+      "type": "ansible",
+      "ansible_env_vars": [
+        "ANSIBLE_CONFIG={{user `packer_config_root`}}/ansible.cfg",
+        "ANSIBLE_NOCOWS=1",
+        "ANSIBLE_DEPRECATION_WARNINGS=false",
+        "ANSIBLE_FORCE_COLOR=true",
+        "ANSIBLE_HOST_KEY_CHECKING=false",
+        "ANSIBLE_DEFAULT_ARGS='--one-line'",
+        "ANSIBLE_SSH_ARGS='-o ForwardAgent=no -o ControlMaster=auto -o ControlPersist=60s'",
+        "ANSIBLE_ROLES_PATH={{user `ansible_root`}}/roles-galaxy:{{user `ansible_root`}}/roles-hestio:{{user `ansible_root`}}/roles:{{user `ansible_root`}}/roles-aon"
+      ],
+      "playbook_file": "{{user `ansible_root`}}/playbooks/build-basic-rhel9-server.yml",
+      "extra_arguments": [
+        "--extra-vars",
+        "@{{user `ansible_root`}}/configurables/linux-rhel9-options.yml"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "{{user `packer_config_root`}}/data/ssg-rhel9-ds-tailoring_vra.xml",
+      "destination": "/tmp/ssg-rhel9-ds-tailoring.xml"
+    },
+    {
+      "type": "file",
+      "source": "{{user `packer_config_root`}}/data/reboot",
+      "destination": "/tmp/reboot"
+    },
+    {
+      "type": "shell",
+      "expect_disconnect": "true",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "script": "{{user `packer_config_root`}}/scripts/bootstrap.sh",
+      "pause_before": "60s"
+    },
+    {
+      "type": "shell",
+      "expect_disconnect": "true",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "script": "{{user `packer_config_root`}}/scripts/oscap.sh",
+      "pause_before": "60s"
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "script": "{{user `packer_config_root`}}/scripts/seal_redhat.bash",
+      "pause_before": "60s"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+---
+# Install puppet-agent on OpenBSD
+
+- name: OpenBSD | Install puppet-agent
+  package:
+    name: "{{ puppet_agent_package_os }}"
+    state: present
+
+- name: OpenBSD | Puppet-agent service
+  service:
+    name: "{{ puppet_agent_service }}"
+    state: started
+    enabled: yes

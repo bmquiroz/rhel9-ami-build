@@ -1,0 +1,39 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: nginx-default
+    image: centos/systemd
+    image_version: latest
+    command: /sbin/init
+    privileged: true
+  - name: nginx-custom
+    image: centos/systemd
+    image_version: latest
+    command: /sbin/init
+    privileged: true
+provisioner:
+  name: ansible
+  playbooks:
+    converge: ../resources/playbook.yml
+  lint:
+    name: ansible-lint
+  inventory:
+    host_vars:
+      nginx-custom:
+        nginx_keep_default_configs: true
+        nginx_stable_repo: false
+        # Current mainline is 1.15.9
+        nginx_version: 1.15.8
+        nginx_logrotate_interval: weekly
+        nginx_logrotate_backlog_size: 5
+scenario:
+  name: centos7
+verifier:
+  name: testinfra
+  lint:
+    name: flake8

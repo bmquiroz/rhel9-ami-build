@@ -1,0 +1,38 @@
+---
+
+- name: "bootstrap | Install utility packages"
+  yum:
+    name: "{{ item }}"
+    state: installed
+  with_items:
+     - vim
+     - lvm2
+
+# Copy disk layout script
+- name: "bootstrap |  Copy disk layout script"
+  copy:
+    src: set-disk-layout.sh
+    dest: /usr/local/bin/set-disk-layout.sh
+    owner: root
+    group: root
+    mode: 0755
+
+# Install NVME script
+- name: "bootstrap | Place NVME script"
+  copy:
+    src: mount-nvme-as-lv.sh
+    dest: /usr/local/bin/mount-nvme-as-lv.sh
+    mode: 0755
+    owner: root
+    group: root
+
+
+# Install NVME script
+# This task scheduled to run at reboot
+- name: "bootstrap | Scheduled task for mounting nvme disks as lv"
+  cron:
+    name: "Scheduled Security Updates"
+    special_time: reboot
+    user: "root"
+    job: "/usr/local/bin/mount-nvme-as-lv.sh"
+    cron_file: /etc/crontab

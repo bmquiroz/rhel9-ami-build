@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: ome-devel@lists.openmicroscopy.org.uk
+  description: Install upstream Nginx
+  company: Open Microscopy Environment
+  license: BSD
+  min_ansible_version: 2.6
+  platforms:
+    - name: EL
+      versions:
+        - 7
+    - name: Ubuntu
+      versions:
+        - bionic
+  role_name: nginx
+  galaxy_tags: ['nginx']
+
+dependencies: []

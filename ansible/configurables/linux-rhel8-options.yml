@@ -1,0 +1,97 @@
+---
+
+# Workaround for RedHat8 not having Python available at /usr/bin/python
+ansible_python_interpreter: /usr/libexec/platform-python
+
+# lvm_vg_setup:
+# - vgname: data
+#   disks:
+#     - /dev/xvdb
+#     - /dev/xvdc
+#     - /dev/xvdd
+#     - /dev/xvde
+#   lvname: vgdata
+#   lvsize: 100%FREE
+#   # Defines additional lvcreate options (e.g. stripes, stripesize, etc)
+#   lvopts: '-i4 -I64'
+#   # Defines filesystem to format lvol as
+#   filesystem: xfs
+#   # Defines if filesystem should be mounted
+#   mount: true
+#   # Defines mountpoint for lvol
+#   mountpoint: /data
+#   # Defines additional mount options (e.g. noatime, noexec, etc)
+#   mountopts: 'noatime'
+# - vgname: archive
+#   disks:
+#     - /dev/xvdf
+#   lvname: vgarchive
+#   lvsize: 100%FREE
+#   # Defines additional lvcreate options (e.g. stripes, stripesize, etc)
+#   lvopts: ''
+#   # Defines filesystem to format lvol as
+#   filesystem: ext4
+#   # Defines if filesystem should be mounted
+#   mount: true
+#   # Defines mountpoint for lvol
+#   mountpoint: /archive
+#   # Defines additional mount options (e.g. noatime, noexec, etc)
+#   mountopts: 'noatime'
+
+
+# Defines if LVM will be managed by role
+# default is false to ensure nothing is changed by accident.
+manage_lvm: false
+
+# Specify repository origin for Puppet.
+# Options are 'puppetlabs_repository' or 'os_repository'.
+# Default is puppetlabs_repository.
+# OS supported with puppetlabs_repository:
+# Redhat/CentOS 5,6,7
+# Debian 6,7,8,9
+# Ubuntu 18.04, 16.04, 15.04, 14.04, 12.04
+# Opensuse: 42
+# Windows NT: 6, 10
+# osx: 10.10, 10.11, 10.12, 10.13
+# Windows and Mac osx support only puppetlabs_repository
+install_from: puppetlabs_repository
+
+# Specifie puppet version to install
+# Supported values are "5" and "6"
+# Only recent Linux distribution support Puppet 6
+# Default is 5
+puppet_version: "6"
+puppet_agent_package_name: "puppet-agent-6.19.1"
+
+# Specify if Puppetlabs repo source is enable
+# Supported values are "present" and "absent"
+# Default is absent
+puppetlabs_repo_source: absent
+
+# Install puppet agent with puppetlabs repository
+# Default is true.
+puppet_agent_install: true
+
+# Setting up puppet_agent
+# Default is true
+puppet_agent_configuration: false
+
+# The master server to request configurations from.
+# Defaults to puppet
+puppet_agent_server: nclpvnpapp10131.cmp.aon.net
+
+# The environment to request when contacting the master.
+# Default is production
+puppet_agent_environment: production
+
+# How often to do a Puppet run, when running as a service.
+# Default is 30m
+puppet_agent_runinterval: 3600m
+
+# Add advanced Puppet settings.
+# Example:
+# puppet_agent_custom_options:
+#   - noop = enabled
+#   - report = true
+#   - daemonize = false
+puppet_agent_custom_options:
