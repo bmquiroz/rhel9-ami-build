@@ -36,7 +36,7 @@
         ],
         "filters": {
           "virtualization-type": "hvm",
-          "name": "CentOS Linux 7*",
+          "name": "amzn2-ami-*",
           "architecture": "x86_64",
           "root-device-type": "ebs"
         },
