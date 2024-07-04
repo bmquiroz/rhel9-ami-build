@@ -36,7 +36,7 @@
         ],
         "filters": {
           "virtualization-type": "hvm",
-          "name": "RHEL-9.*_HVM-20*",
+          "name": "RHEL-8.*_HVM-20*",
           "architecture": "x86_64",
           "root-device-type": "ebs"
         },
